@@ -1,5 +1,5 @@
 import { once } from "node:events";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
 import os from "node:os";
@@ -8,6 +8,7 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { BrowserManager } from "../../browser-manager.js";
+import { removeDirectoryWithRetries } from "../../test-cleanup.js";
 import { QuickJSSandbox } from "../quickjs-sandbox.js";
 import { ensureSandboxClientBundle } from "./bundle-test-helpers.js";
 
@@ -328,10 +329,7 @@ describe.sequential("QuickJS Playwright Page API coverage", () => {
 
   afterAll(async () => {
     await manager.stopAll();
-    await rm(browserRootDir, {
-      recursive: true,
-      force: true,
-    });
+    await removeDirectoryWithRetries(browserRootDir);
   }, 180_000);
 
   describe.sequential("navigation", () => {

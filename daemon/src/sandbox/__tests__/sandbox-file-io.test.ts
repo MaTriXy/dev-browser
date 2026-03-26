@@ -17,6 +17,7 @@ import {
   ensureDevBrowserTempDir,
   resolveDevBrowserTempPath,
 } from "../../temp-files.js";
+import { removeDirectoryWithRetries } from "../../test-cleanup.js";
 import { runScript } from "../script-runner-quickjs.js";
 import { ensureSandboxClientBundle } from "./bundle-test-helpers.js";
 
@@ -91,10 +92,7 @@ describe.sequential("QuickJS sandbox file I/O", () => {
 
   afterAll(async () => {
     await manager.stopAll();
-    await rm(browserRootDir, {
-      recursive: true,
-      force: true,
-    });
+    await removeDirectoryWithRetries(browserRootDir);
   }, 180_000);
 
   async function runSandboxScript(script: string): Promise<CapturedOutput> {

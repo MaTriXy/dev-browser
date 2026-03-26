@@ -1,10 +1,11 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { BrowserManager } from "./browser-manager.js";
+import { removeDirectoryWithRetries } from "./test-cleanup.js";
 
 const browserName = "browser-manager-pages";
 
@@ -27,10 +28,7 @@ describe.sequential("BrowserManager page discovery", () => {
 
   afterAll(async () => {
     await manager.stopAll();
-    await rm(browserRootDir, {
-      recursive: true,
-      force: true,
-    });
+    await removeDirectoryWithRetries(browserRootDir);
   }, 180_000);
 
   async function ensureBrowser(): Promise<void> {

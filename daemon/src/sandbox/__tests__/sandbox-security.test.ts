@@ -1,10 +1,11 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { BrowserManager } from "../../browser-manager.js";
+import { removeDirectoryWithRetries } from "../../test-cleanup.js";
 import { runScript } from "../script-runner-quickjs.js";
 
 const browserName = "sandbox-security";
@@ -51,10 +52,7 @@ describe.sequential("QuickJS sandbox security", () => {
 
   afterAll(async () => {
     await manager.stopAll();
-    await rm(browserRootDir, {
-      recursive: true,
-      force: true,
-    });
+    await removeDirectoryWithRetries(browserRootDir);
   }, 180_000);
 
   async function runSandboxScript(

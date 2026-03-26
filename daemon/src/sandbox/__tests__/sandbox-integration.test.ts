@@ -1,10 +1,11 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { BrowserManager } from "../../browser-manager.js";
+import { removeDirectoryWithRetries } from "../../test-cleanup.js";
 import { runScript } from "../script-runner-quickjs.js";
 import { ensureSandboxClientBundle } from "./bundle-test-helpers.js";
 
@@ -52,10 +53,7 @@ describe.sequential("QuickJS sandbox integration", () => {
 
   afterAll(async () => {
     await manager.stopAll();
-    await rm(browserRootDir, {
-      recursive: true,
-      force: true,
-    });
+    await removeDirectoryWithRetries(browserRootDir);
   }, 180_000);
 
   it("navigates through QuickJS and logs the page title", async () => {
